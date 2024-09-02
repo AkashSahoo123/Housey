@@ -1,10 +1,16 @@
 import { Server } from "socket.io";
+import dotenv from "dotenv"
 
 const io = new Server({
   cors: {
     origin: "https://housey-1.onrender.com",
   },
 });
+
+dotenv.config({
+  path: './.env'
+})
+
 
 let onlineUser = [];
 
@@ -39,4 +45,4 @@ io.on("connection", (socket) => {
   });
 });
  
-io.listen("4000"); 
+io.listen("process.env.PORT");
