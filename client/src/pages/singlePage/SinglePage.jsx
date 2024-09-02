@@ -6,6 +6,8 @@ import DOMPurify from "dompurify";
 import { useContext, useState } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import apiRequest from "../../lib/apiRequest";
+import toast from "react-hot-toast";
+
 
 function SinglePage() {
   const post = useLoaderData();
@@ -16,14 +18,23 @@ function SinglePage() {
   const handleSave = async () => {
     if (!currentUser) {
       navigate("/login");
+      return;
     }
-    // AFTER REACT 19 UPDATE TO USEOPTIMISTIK HOOK
-    setSaved((prev) => !prev);
+  
+    setSaved((prev) => !prev); // Optimistically update UI
+  
     try {
       await apiRequest.post("/users/save", { postId: post.id });
+      toast.success(saved ? "Post removed from your saved list" : "Post saved to your list");
     } catch (err) {
-      console.log(err);
-      setSaved((prev) => !prev);
+      if (err.response && err.response.status === 409) {
+        console.log("Post is already saved.");
+        toast.error("This post is already saved in your list.");
+      } else {
+        console.log(err);
+        setSaved((prev) => !prev); // Revert optimistic update on error
+        toast.error("Something went wrong. Please try again.");
+      }
     }
   };
 

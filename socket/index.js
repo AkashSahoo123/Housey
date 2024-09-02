@@ -24,12 +24,13 @@ const getUser = (userId) => {
 };
 
 io.on("connection", (socket) => {
-  socket.on("newUser", (userId) => {
-    addUser(userId, socket.id);
+  socket.on("newUser", (userId) => {  //when we are using on we are listening the event name
+    addUser(userId, socket.id); //for every connection we gets a new socket id ,so we are storing a socket id corresponding to every user
   });
 
   socket.on("sendMessage", ({ receiverId, data }) => {
     const receiver = getUser(receiverId);
+    console.log(receiver)
     io.to(receiver.socketId).emit("getMessage", data);
   });
 
@@ -37,5 +38,5 @@ io.on("connection", (socket) => {
     removeUser(socket.id);
   });
 });
-
-io.listen("4000");
+ 
+io.listen("4000"); 

@@ -9,8 +9,9 @@ import { useNotificationStore } from "../../lib/notificationStore";
 function Chat({ chats }) {
   const [chat, setChat] = useState(null);
   const { currentUser } = useContext(AuthContext);
+  // console.log(currentUser)
   const { socket } = useContext(SocketContext);
-
+  // console.log(chats)
   const messageEndRef = useRef();
 
   const decrease = useNotificationStore((state) => state.decrease);
@@ -22,6 +23,7 @@ function Chat({ chats }) {
   const handleOpenChat = async (id, receiver) => {
     try {
       const res = await apiRequest("/chats/" + id);
+      console.log(res.data.seenBy);
       if (!res.data.seenBy.includes(currentUser.id)) {
         decrease();
       }
@@ -40,8 +42,10 @@ function Chat({ chats }) {
     if (!text) return;
     try {
       const res = await apiRequest.post("/messages/" + chat.id, { text });
+      console.log(res)
       setChat((prev) => ({ ...prev, messages: [...prev.messages, res.data] }));
       e.target.reset();
+     
       socket.emit("sendMessage", {
         receiverId: chat.receiver.id,
         data: res.data,
@@ -65,6 +69,7 @@ function Chat({ chats }) {
         if (chat.id === data.chatId) {
           setChat((prev) => ({ ...prev, messages: [...prev.messages, data] }));
           read();
+          
         }
       });
     }

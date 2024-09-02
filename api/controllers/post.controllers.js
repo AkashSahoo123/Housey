@@ -19,6 +19,9 @@ export const getPosts = async (req, res) => {
                     gte: parseInt(query.minPrice) || 0,
                     lte: parseInt(query.maxPrice) || 1000000
                 }
+            },
+            include:{
+              savedPosts:true
             }
         });
         res.status(200).json(posts);
@@ -42,6 +45,7 @@ export const getPost = async (req, res) => {
               avatar: true,
             },
           },
+          savedPosts:true
         },
       });
   
